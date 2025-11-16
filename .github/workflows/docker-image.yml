@@ -27,7 +27,11 @@ jobs:
           tags: maksimkaaa/pract-frontend:latest
     
   k8s:
-    runs-on: [self-hosted, linux]
+    runs-on: self-hosted
+    steps:
+      - name: Deploy k3s deployment
+        run: |
+          helm upgrade --install pet ./pet/petProject
     
 
 
