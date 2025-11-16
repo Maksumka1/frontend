@@ -53,5 +53,6 @@ def healthz():
 def not_found(error):
     return jsonify({'error': 'Not found'}), 404
 
+print("Hello world")
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
