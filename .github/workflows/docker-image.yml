@@ -25,7 +25,7 @@ jobs:
         with:
           context: ./application
           push: true
-          tags: maksimkaaa/pract-frontend:latest
+          tags: maksimkaaa/pract-backend:latest
   
   frontend:
     runs-on: ubuntu-latest
@@ -50,7 +50,7 @@ jobs:
         with:
           context: ./backend
           push: true
-          tags: maksimkaaa/pract-backend:latest
+          tags: maksimkaaa/pract-frontend:latest
     
 
   k8s:
