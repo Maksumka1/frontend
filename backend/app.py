@@ -5,7 +5,7 @@ import os
 from prometheus_client import generate_latest, Counter, CONTENT_TYPE_LATEST
 
 os.makedirs('logs', exist_ok=True)
-
+#Yes
 logging.basicConfig(
     filename='logs/app.log',
     level=logging.INFO,
