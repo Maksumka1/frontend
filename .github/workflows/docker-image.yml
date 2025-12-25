@@ -28,6 +28,7 @@ jobs:
     
   k8s:
     runs-on: self-hosted
+    needs: docker
     steps:
       - name: Deploy k3s deployment
         run: |
