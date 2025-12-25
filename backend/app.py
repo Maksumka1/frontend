@@ -40,6 +40,10 @@ def index():
     conn.close()
     return render_template('index.html', pcs=pcs)
 
+@app.route('/healthcheck')
+def healthcheck():
+    return {"status": "ok"}, 200
+
 @app.route('/mark_viewed', methods=['POST'])
 def mark_viewed():
     REQUEST_COUNTER.inc()
