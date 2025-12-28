@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db-statefulset
+spec:
+  serviceName: postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.database.labels.app }}
+
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 4Gi
+
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.database.labels.app }} 
+    spec:
+      containers:
+      - name: postgres
+        image: "{{ .Values.database.image.repository }}:{{ .Values.database.image.tag }}"
+
+        volumeMounts:
+          - mountPath: {{ .Values.database.storage.mountPath }}
+            name: data
+          - mountPath: {{ .Values.database.initSql.mountPath }}
+            name: init-sql
+
+        ports:
+          - containerPort: {{ .Values.database.service.port }}
+        env:
+        {{- range $name, $cfg := .Values.database.env }}
+        - name: {{ $name }}
+          {{- if $cfg.configMap }}
+          valueFrom:
+            configMapKeyRef:
+              name: {{ $cfg.configMap }}
+              key: {{ $cfg.key }}
+          {{- else if $cfg.secret }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ $cfg.secret }}
+              key: {{ $cfg.key }}
+          {{- end }}
+        {{- end }}
+
+      volumes:
+      - name: init-sql #init-sql volume
+        configMap:
+          name: {{ .Values.database.initSql.configMapName }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+spec:
+  selector:
+    app: {{ .Values.database.labels.app }}
+  ports:
+    - port: {{ .Values.database.service.port }}
+      targetPort: {{ .Values.database.service.port }}

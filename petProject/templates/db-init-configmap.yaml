@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-init-sql
+data:
+  init.sql: |
+    CREATE TABLE IF NOT EXISTS person (
+        id SERIAL PRIMARY KEY,
+        name TEXT NOT NULL,
+        image_url TEXT NOT NULL,
+        description TEXT NOT NULL,
+        price TEXT NOT NULL,
+        title TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS viewed_links (
+        id SERIAL PRIMARY KEY,
+        link TEXT NOT NULL
+    );
+

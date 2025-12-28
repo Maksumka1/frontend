@@ -1,0 +1,130 @@
+backend:
+  image:
+    repository: maksimkaaa/pract-backend
+    tag: latest
+
+  replicaCount: 1
+  labels:
+    app: backend
+
+  nodeAffinity:
+    key: kubernetes.io/hostname
+    operator: In
+    values:
+      - worker1
+  configMapName: backend-config
+
+  resources:
+    limits:
+      cpu: "250m"
+      memory: "512Mi"
+    requests:
+      cpu: "125m"
+      memory: "256Mi"
+
+  service:
+    type: NodePort
+    namespace: default
+    ports:
+      - name: metrics
+        protocol: TCP
+        port: 5001
+        targetPort: 5001
+
+  serviceMonitor:
+    name: parser-servicemonitor
+    labels:
+      release: monitoring
+
+    interval: 15s
+    scrapeTimeout: 10s
+    namespace: default
+
+
+
+
+
+frontend:
+  image:
+    repository: maksimkaaa/pract-frontend
+    tag: latest
+
+  replicaCount: 1
+  labels:
+    app: frontend
+  configMapName: front-config
+  
+  nodeAffinity:
+    key: kubernetes.io/hostname
+    operator: In
+    values:
+      - worker2
+      
+  resources:
+    requests:
+      cpu: 10m
+      memory: 64Mi
+    limits:
+      cpu: 50m
+      memory: 128Mi
+
+
+  readinessProbe:
+    path: /healthcheck
+
+  service:
+    type: NodePort
+    ports:
+      - name: http
+        protocol: TCP
+        port: 5000
+        targetPort: 5000
+
+
+
+
+database:
+  image:
+    repository: postgres
+    tag: "13"
+
+  labels:
+    app: postgres
+
+  secrets:
+    user: "postgres"
+    password: "password123"
+  
+  config:
+    name: "mydb"
+    host: "db"
+  
+  storage:
+    enabled: true
+    pvcName: claim-local-pv
+    mountPath: /var/lib/postgresql/data
+
+  initSql:
+    enabled: true
+    configMapName: db-init-sql
+    mountPath: /docker-entrypoint-initdb.d
+
+  service:
+    port: 5432
+
+  env:
+    POSTGRES_DB:
+      configMap: db-config
+      key: database-name
+
+    POSTGRES_HOST:
+      configMap: db-config
+      key: database-host
+
+    POSTGRES_USER:
+      secret: db-secret
+      key: database-user
+
+    POSTGRES_PASSWORD:
+      secret: db-secret
+      key: database-password

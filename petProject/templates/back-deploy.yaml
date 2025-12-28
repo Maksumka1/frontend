@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+  labels:
+    app: {{ .Values.backend.labels.app }}
+spec:
+  replicas: {{ .Values.backend.replicaCount }}
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: {{ .Values.backend.labels.app }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.backend.labels.app }}
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: {{ .Values.backend.nodeAffinity.key }}
+                operator: {{ .Values.backend.nodeAffinity.operator }}
+                values:
+                  - {{ index .Values.backend.nodeAffinity.values 0 }}
+
+      containers:
+      - name: backend
+        image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
+        ports:
+        - containerPort: {{ index .Values.backend.service.ports 0 "targetPort" }}
+        envFrom:
+        - configMapRef:
+            name: {{ .Values.backend.configMapName }}
+

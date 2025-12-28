@@ -1,0 +1,22 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: "{{ .Values.backend.serviceMonitor.name }}"   # назва ServiceMonitor (будь-яка, але унікальна)
+  labels:
+    release: "{{ .Values.backend.serviceMonitor.labels.release }}"  # важливо: селектор повинен збігатися з Prometheus Operator
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.backend.labels.app }}   # ← тут має бути label сервісу, який ти хочеш моніторити
+  namespaceSelector:
+    matchNames:
+      - {{ .Values.backend.service.namespace }}            # ← неймспейс, де живе сервіс
+  endpoints:
+    {{- with index .Values.backend.service.ports 0 }}
+    - port: "{{ .name }}"
+      path: "/metrics"
+      interval: "{{ $.Values.backend.serviceMonitor.interval }}"
+      scrapeTimeout: "{{ $.Values.backend.serviceMonitor.scrapeTimeout }}"
+    {{- end }}
+
+

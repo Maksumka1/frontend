@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.frontend.configMapName }}
+data:
+  FLASK_ENV: development
+  # DATABASE_URL: postgresql://postgres:1111@db:5432/postgres

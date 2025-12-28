@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+  labels:
+    app: {{ .Values.frontend.labels.app }}
+spec:
+  replicas: {{ .Values.frontend.replicaCount }}
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: {{ .Values.frontend.labels.app }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.frontend.labels.app }}
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: {{ .Values.frontend.nodeAffinity.key }}
+                operator: {{ .Values.frontend.nodeAffinity.operator }}
+                values:
+                  - {{ index .Values.frontend.nodeAffinity.values 0 }}
+
+      containers:
+      - name: frontend
+        image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}"
+        ports:
+        - containerPort: {{ index .Values.frontend.service.ports 0 "targetPort" }}
+        readinessProbe:
+          httpGet:
+            path: {{ .Values.frontend.readinessProbe.path }}
+            port: {{ index .Values.frontend.service.ports 0 "targetPort" }}
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
+        envFrom:
+        - configMapRef:
+            name: {{ .Values.frontend.configMapName }}
+
