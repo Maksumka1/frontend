@@ -1,77 +1,76 @@
-# My Pet Kubernetes Project
+# Kubernetes Pet Project (Production-like Setup)
 
-Pet project demonstrating a production-like Kubernetes setup
-with Helm, CI/CD, monitoring, and automatic resource management via VPA.
+This project demonstrates a production-like Kubernetes environment with automated deployment, monitoring, and resource management.
 
+## Overview
+
+The application consists of a backend API, frontend UI, and a database, all deployed using Helm charts. It includes CI/CD automation, monitoring, and dynamic resource optimization.
 
 ## Architecture
-- Backend — Python REST API, exposes custom Prometheus metrics
-- Frontend — UI service
-- Database — stateful service deployed via StatefulSet
-- Helm chart deploys all components
-- Vertical Pod Autoscaler manages resource requests
-- CI/CD via GitHub Actions
-- Prometheus + Grafana for monitoring
 
+- **Backend** - Python REST API with custom Prometheus metrics
+- **Frontend** - UI service
+- **Database** - Stateful service deployed using StatefulSet
+- **Helm** - manages full application deployment
+- **VPA (Vertical Pod Autoscaler)** - automatically adjusts resource requests
+- **Monitoring** - Prometheus + Grafana
+- **CI/CD** - GitHub Actions pipeline
 
 ## Tech Stack
 - Docker
 - Kubernetes
 - Helm
 - Python
+- GitHub Actions
+- Prometheus & Grafana
 
-## Run locally
+## Features
+- Automated CI/CD pipeline (build → push → deploy)
+- Kubernetes deployment using Helm charts
+- Stateful database with persistent storage
+- Monitoring with custom metrics
+- Automatic resource management via VPA
 
-### Build images
+## Getting Started
+
+### 1. Build Docker Images
+
 ```bash
 docker build -t my-backend ./backend
 docker build -t my-frontend ./frontend
 ```
 
-### Configuration
+### 2. Configure Values
 
-Before deployment, update values.yaml:
-- Docker image names (image.repository)
-- Node affinity settings (nodeAffinity)
+Update values.yaml before deployment:
 
+- Docker image repositories (image.repository)
+- Node affinity settings
+- Environment variables
 
-### Deploy to Kubernetes
+### 3. Deploy to Kubernetes
 ```bash
 helm install my-app ./petProject
 ```
 
+### CI/CD Pipeline
+The GitHub Actions pipeline:
 
-## CI/CD
-- GitHub Actions pipeline triggers on push to main
-- Builds Backend and Frontend Docker images
-- Pushes images to DockerHub
+- Triggers on push to main
+- Builds Docker images (backend & frontend)
+- Pushes images to Docker Hub
 - Deploys application to Kubernetes using Helm
 
+### Kubernetes Details
+This project includes:
 
-## Kubernetes and Helm details.
-You can change anything in values.yaml
-- Backend Deployment
-- Backend ConfigMap
-- Backend Service
-
-- Frontend Deployment
-- Frontend ConfigMap
-- Frontend Service
-
-- DataBase StateFullSet
-- DataBase ConfigMap
-- DataBase Secret
-- DataBase init container
-- DataBase Service
-
-- readinessProbe for Frontend
-- volumeClaimTemplates for DataBase
-- DataBase env in values file
-  
-- Resource manage by VPA
-- updateMode for Vpa is "Auto"
-
-
-## Future Improvements
-- Add HPA for Backend
-- Improve Grafana dashboard
+- Deployments (Backend & Frontend)
+- ConfigMaps
+- Services
+- StatefulSet (Database)
+- Secrets
+- Init Containers
+- Readiness Probes
+- Persistent Volumes (volumeClaimTemplates)
+- Environment configuration via values.yaml
+- Vertical Pod Autoscaler (VPA) with Auto update mode
